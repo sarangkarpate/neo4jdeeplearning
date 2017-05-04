@@ -1,0 +1,6 @@
+<city>, <taxonomyCode>
+
+MATCH (p: Physician)
+WHERE p.city = 'KEARNEY' AND p.taxonomyCode = '101YM0800X'
+return p
+
