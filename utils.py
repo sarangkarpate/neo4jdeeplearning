@@ -34,6 +34,34 @@ def parse_neo4j_to_nx(results):
     print 'nodes:', num_nodes, 'edges:', num_edges
     return G
 
+def clusterGraph(g, cluster):
+    # add nodes in cluster to graph:
+    gc = nx.DiGraph()
+    for n_id in cluster:
+        gc.add_node(n_id)
+        
+    # add edges to graph if both ends already in graph:
+    for u, v in g.edges_iter():
+        if (u in gc) and (v in gc):
+            gc.add_edge(u, v)
+        
+    return gc
+
+def labelClusters(graph, clusters):
+    neo4j_ids = nx.get_node_attributes(graph, 'neo4j_id')
+    labeledClusters = {}
+    labeledNodes = {}
+    for nx_id, neo4j_id in neo4j_ids.iteritems():
+        labeledNodes[neo4j_id] = []
+    
+    for cluster, nodes in clusters.iteritems():
+        labeledClusters[cluster] = []
+        for node in nodes:
+            labeledClusters[cluster].append(neo4j_ids[node])
+            labeledNodes[neo4j_ids[node]].append(cluster)
+            
+    return labeledClusters, labeledNodes
+
 def displayGraph(graph, title='', color_values = None):
     pos = nx.spring_layout(graph)
     nx.draw_networkx_edges(graph, pos, arrows=True)
